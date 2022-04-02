@@ -51,8 +51,8 @@ try:
     email_input.clear()
     password_input.clear()
 
-    email_input.send_keys("+79785599286")
-    password_input.send_keys("Worldhack0Rin")
+    email_input.send_keys("")
+    password_input.send_keys("")
     login_button.click()
 
     # go to group page
