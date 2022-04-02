@@ -38,9 +38,10 @@ class BaseOkErrorException(Exception):
         response: Response
     ):
         error = ''
+        status = f'status: {response.status_code}'
         response_log = f'{response.json()}'
         request_log = f'{response.request}'
-        error += f'{response_log} {request_log}'
+        error += f'{status} {response_log} {request_log}'
         return BaseOkErrorException(
             response = response,
             message = error

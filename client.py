@@ -1,6 +1,7 @@
 import requests
 import json
 import time
+import hashlib
 
 from httpx import Client, Response
 
@@ -37,18 +38,25 @@ class HttpModule():
                     response
                 )
             raise error
-        response_success = response_dict.get('response')
-        if not response_success:
+        # response_success = response_dict.get('response')
+        if ( 
+            'error' in response_dict or
+            'error_code' in response_dict
+        ):
             raise BaseOkErrorException.get_dummy_from_response(
                 response
             )
         return BaseOkResponse(
-            response = response_success
+            response = response 
         )
 
-class OkClient():
+class OkClient:
     http: HttpModule
     access_token: str
+    session_key: str
+    session_secret_key: str
+    app_secret_key: str
+    app_key: str
     api_v: str
     api_url: str
     app_id: int
@@ -56,9 +64,14 @@ class OkClient():
     user: OkUser
 
     def __init__(self,
-            access_token: str = "",
+            session_key: str = "tkn1cmoueDna4uM4gbDlpu1QpMd6l4N3KQt80CTKGlAjqCLckuzvuuusHPcGjhDDX532W9",
+            session_secret_key: str = "06d5b9a9c78c73958bde41b6c4ace479",
+            access_token: str = "tkn18Qs1LhTaCG0Dh5jtzKuZI9WJ6mXQs5A15NjNvWypqXveqGh9jxXjCBnywZ6ytmk39",
+            app_key: str = "CIJBIKKGDIHBABABA",
+            app_secret_key: str = "13C891E288B067881DFAF163",
+            # access_token: str = "",
             api_v: str = '',
-            api_url: str = '',
+            api_url: str = 'https://api.ok.ru/api',
             app_id: int = 0,
             default_ok_link: str = 'https://ok.ru',
             user: OkUser = OkUser()
@@ -68,6 +81,10 @@ class OkClient():
         self.api_url = api_url
         self.default_ok_link = default_ok_link
         self.access_token = access_token
+        self.session_key = session_key
+        self.session_secret_key = session_secret_key
+        self.app_key = app_key
+        self.app_secret_key = app_secret_key
         # init httpx Client
         self.user = user
         self.http = HttpModule(
@@ -75,10 +92,47 @@ class OkClient():
                 base_url = self.api_url,
                 params = {
                     'access_token': self.access_token,
-                    'v': self.api_v
+                    'application_key': self.app_key,
+                    # 'session_secret_key': self.session_secret_key
+                    # 'v': self.api_v
                 }
             )
         )
+
+    def get_session_secret_key(self) -> str:
+        """
+        # MD5(access_token + application_secret_key)
+        at = self.access_token
+        ask = self.app_secret_key
+        """
+        # return self.session_secret_key
+        at = self.access_token
+        ask = self.app_secret_key
+        res = f'{at + ask}'
+        logger.warning(f'session sk: {res}')
+        hashed = hashlib.md5(res.encode()).hexdigest()
+        return hashed.lower()
+
+    def get_sig(self, params: dict) -> str:
+        default_params = {
+            'application_key': self.app_key,
+        }
+        params = {**params, **default_params}
+        params = dict(sorted(params.items()))
+        logger.warning(f'params are {params}')
+        sk = self.get_session_secret_key()
+        if 'session_key' in params:
+            del params['session_key']
+        if 'access_token' in params:
+            del params['access_token']
+        params_str = ""
+        for (k,v) in params.items():
+            params_str += f"{k}={v}"
+        res = f'{params_str}{sk}'
+        logger.warning(f'str to hash {res}')
+        hashed = hashlib.md5(res.encode()).hexdigest()
+        return hashed.lower()
+        
 
     """
     def request_token_url(self, app_id=7709111):
