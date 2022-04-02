@@ -4,7 +4,7 @@ from ok_core.client import OkClient
 from httpx import Response
 import logging
 
-from ok_core.mediatopic.models import FieldSets, OkMediatopic
+from ok_core.mediatopic.models import FieldSets, OkMediatopicModel
 from ok_core.models import BaseModelParseException, BaseOkResponse
 
 
@@ -20,7 +20,7 @@ class GetMediatopicByIdsQuery(BaseModel):
     features: Optional[str] = None
 
 class OkMediatopicResponse(BaseModel):
-    media_topics: list[OkMediatopic]
+    media_topics: list[OkMediatopicModel]
 
 
 class OkMediatopic:
