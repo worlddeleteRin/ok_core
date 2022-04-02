@@ -34,7 +34,7 @@ class OkUser(BaseModel):
         print(session.cookies.get_dict())
         if r.status_code != 200:
             return False
-        auth_code = session.get("AUTHCODE")
+        auth_code = session.cookies.get_dict().get("AUTHCODE")
         if not auth_code:
             return False
         return True
