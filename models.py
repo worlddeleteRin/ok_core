@@ -3,13 +3,14 @@ from typing import Any, Optional, Union
 
 from httpx import Response
 
-class BaseVkResponse(BaseModel):
+class BaseOkResponse(BaseModel):
     response: Any
 
-class BaseVkErrorException(Exception):
+class BaseOkErrorException(Exception):
     response: Optional[Response] = None
     error_code: Optional[Union[int, str]] = None
     message: str
+    notify: bool = False
 
     def __init__(
         self,
@@ -40,7 +41,7 @@ class BaseVkErrorException(Exception):
         response_log = f'{response.json()}'
         request_log = f'{response.request}'
         error += f'{response_log} {request_log}'
-        return BaseVkErrorException(
+        return BaseOkErrorException(
             response = response,
             message = error
         )

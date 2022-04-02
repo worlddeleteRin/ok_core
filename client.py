@@ -4,6 +4,8 @@ import time
 
 from httpx import Client, Response
 
+from user.main import OkUser
+
 from .models import *
 
 class HttpModule():
@@ -19,42 +21,43 @@ class HttpModule():
     def process_response (
         self,
         response: Response
-    ) -> BaseVkResponse:
+    ) -> BaseOkResponse:
         response_dict = dict(response.json())
         if response.status_code != 200:
             response_error = response_dict.get('error')
             if isinstance(response_error, dict):
-                error = BaseVkErrorException(
+                error = BaseOkErrorException(
                     response = response,
                     **response_error 
                 )
             else:
-                error = BaseVkErrorException.get_dummy_from_response(
+                error = BaseOkErrorException.get_dummy_from_response(
                     response
                 )
             raise error
         response_success = response_dict.get('response')
         if not response_success:
-            raise BaseVkErrorException.get_dummy_from_response(
+            raise BaseOkErrorException.get_dummy_from_response(
                 response
             )
-        return BaseVkResponse(
+        return BaseOkResponse(
             response = response_success
         )
-        
 
-class VkClient():
+class OkClient():
     http: HttpModule
     access_token: str
     api_v: str
     api_url: str
     app_id: int
+    user: OkUser
 
     def __init__(self,
-            access_token: str,
-            api_v: str = '5.131',
-            api_url: str = 'https://api.vk.com/method',
-            app_id: int = 7709111
+            access_token: str = "",
+            api_v: str = '',
+            api_url: str = '',
+            app_id: int = 0,
+            user: OkUser = OkUser()
         ):
         self.api_v = api_v
         self.api_url = api_url
