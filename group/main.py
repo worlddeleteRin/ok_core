@@ -10,8 +10,8 @@ class OkGroup:
     ):
         self.client = client
 
+    @staticmethod
     def parseGroupTopicIdsFromUrl(
-        self,
         url: str
     ) -> tuple[str, str] | None:
         # https://ok.ru/group/61638264422477/topic/154623547495757
