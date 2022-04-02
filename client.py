@@ -4,9 +4,11 @@ import time
 
 from httpx import Client, Response
 
-from user.main import OkUser
+from ok_core.user.main import OkUser
 
-from .models import *
+from ok_core.models import *
+import logging
+logger = logging.getLogger(__name__)
 
 class HttpModule():
     is_debug: bool = True
@@ -61,11 +63,13 @@ class OkClient():
             default_ok_link: str = 'https://ok.ru',
             user: OkUser = OkUser()
         ):
+        # logger.warning(f'user init is {user.dict()}')
         self.api_v = api_v
         self.api_url = api_url
         self.default_ok_link = default_ok_link
         self.access_token = access_token
         # init httpx Client
+        self.user = user
         self.http = HttpModule(
             client = Client(
                 base_url = self.api_url,

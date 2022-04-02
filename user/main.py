@@ -1,13 +1,6 @@
 from pydantic.main import BaseModel
 
-class OkUser:
-    username: str
-    password: str
-    def __init__(
-        self,
-        username: str = "",
-        password: str = ""
-    ):
-        self.username = username
-        self.password = password
+class OkUser(BaseModel):
+    username: str = ""
+    password: str = ""
 
