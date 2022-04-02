@@ -60,7 +60,7 @@ try:
     driver.get("https://ok.ru/group/61638264422477")
     time.sleep(1)
 
-    "GROUP_HEADER:154619355092301:0"
+    # "GROUP_HEADER:154619355092301:0"
     post_id = "154621104051533"
     like_data_attribute = f"GROUP_HEADER:{post_id}:0"
     # post_like_element: WebElement = driver.find_element_by_id("154619355092301")

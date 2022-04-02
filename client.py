@@ -50,6 +50,7 @@ class OkClient():
     api_v: str
     api_url: str
     app_id: int
+    default_ok_link: str
     user: OkUser
 
     def __init__(self,
@@ -57,10 +58,12 @@ class OkClient():
             api_v: str = '',
             api_url: str = '',
             app_id: int = 0,
+            default_ok_link: str = 'https://ok.ru',
             user: OkUser = OkUser()
         ):
         self.api_v = api_v
         self.api_url = api_url
+        self.default_ok_link = default_ok_link
         self.access_token = access_token
         # init httpx Client
         self.http = HttpModule(

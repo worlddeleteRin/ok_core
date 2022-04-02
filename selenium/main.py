@@ -4,6 +4,9 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.remote.webelement import WebElement
+import time
+
+from user.main import OkUser
 
 def launch_default_selenium_driver() -> WebDriver:
     user_agent = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.50 Safari/537.36'
@@ -29,7 +32,8 @@ def launch_default_selenium_driver() -> WebDriver:
     return driver
 
 def default_selenium_login(
-    wd: WebDriver
+    wd: WebDriver,
+    user: OkUser
 ):
     # target elements
     email_input: WebElement = wd.find_element_by_id("field_email")
@@ -40,8 +44,6 @@ def default_selenium_login(
     email_input.clear()
     password_input.clear()
 
-    email_input.send_keys("")
-    password_input.send_keys("")
+    email_input.send_keys(user.username)
+    password_input.send_keys(user.password)
     login_button.click()
-    pass
-
