@@ -56,7 +56,7 @@ class OkLikes:
             by=By.XPATH,
             value=x_find
         )
-        print('like el is ', like_el)
+        # print('like el is ', like_el)
         like_el.click()
         wd.close()
 

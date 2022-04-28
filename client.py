@@ -72,7 +72,7 @@ class OkClient:
             # access_token: str = "",
             api_v: str = '',
             api_url: str = 'https://api.ok.ru/api',
-            app_id: int = 0,
+            app_id: int = 512001409175,
             default_ok_link: str = 'https://ok.ru',
             user: OkUser = OkUser()
         ):
@@ -137,4 +137,14 @@ class OkClient:
     """
     def request_token_url(self, app_id=7709111):
         return f'https://oauth.vk.com/authorize?client_id={app_id}&redirect_uri=https://oauth.vk.com/blank.html&display=popup&scope=notify+friends+photos+status+wall+offline+groups+stats+email+market&response_type=token&revoke=1'
+    """
+    """
+    https://connect.ok.ru/oauth/authorize?client_id=512001409175&scope=VALUABLE_ACCESS;LONG_ACCESS_TOKEN;PHOTO_CONTENT;GROUP_CONTENT;VIDEO_CONTENT;APP_INVITE;GET_EMAIL&response_type=token&redirect_uri=socials.fast-code.ru&layout=w
+    """
+    """
+    https://fast-code.ru/
+    #access_token=tkn1kqp4QSJ3TYfYHTQ7FwgctoNQtZupUcgNUEmEjZZFuIWy0vfRCnYRzbVQj6I6G17in
+    session_secret_key=edd0be174a92f156f7c160a88da57370
+    permissions_granted=PHOTO_CONTENT%3BVALUABLE_ACCESS%3BGROUP_CONTENT%3BLONG_ACCESS_TOKEN
+    expires_in=2592000
     """
