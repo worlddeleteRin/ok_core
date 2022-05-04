@@ -6,7 +6,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webelement import WebElement
 from ok_core.client import OkClient
 from ok_core.likes.models import OkAddLikeProviderEnum
-from ok_core.selenium.main import default_selenium_login, launch_default_selenium_driver
+from ok_core.selenium.main import launch_default_selenium_driver
 import time
 
 from ok_core.user.main import OkUser
@@ -45,9 +45,8 @@ class OkLikes:
         # go the the ok login page
         wd.get(self.client.default_ok_link)
         # submit login form
-        default_selenium_login(
+        self.user.default_selenium_login(
             wd=wd,
-            user=self.user
         )
         time.sleep(1)
         # go to group page

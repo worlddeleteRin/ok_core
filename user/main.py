@@ -1,9 +1,15 @@
 from typing import Optional
 from pydantic.main import BaseModel
 import requests
+from selenium.webdriver.chrome.webdriver import WebDriver
+from selenium.webdriver.remote.webelement import WebElement
 from ok_core.client import OkClient
+from ok_core.selenium.main import launch_default_selenium_driver
 
 from ok_core.user.models import AuthorizeRequestFormData, AuthorizeRequestQuery
+import time
+from urllib.parse import urlparse
+from urllib.parse import parse_qs 
 
 class OkUser(BaseModel):
     client: OkClient
@@ -15,9 +21,6 @@ class OkUser(BaseModel):
 
     class Config:
         arbitrary_types_allowed = True
-
-    def oauth_get_grant_link(self):
-        pass
 
     def check_can_authorize_web_dirty(
         self
@@ -50,3 +53,50 @@ class OkUser(BaseModel):
         if not auth_code:
             return False
         return True
+
+    def default_selenium_login(
+        self,
+        wd: WebDriver,
+    ):
+        # target elements
+        email_input: WebElement = wd.find_element_by_id("field_email")
+        password_input: WebElement = wd.find_element_by_id("field_password")
+        login_button: WebElement = wd.find_element_by_class_name("button-pro.__wide")
+        # clear inputs
+        email_input.clear()
+        password_input.clear()
+
+        email_input.send_keys(self.username)
+        password_input.send_keys(self.password)
+
+        login_button.click()
+
+    def selenium_get_access_token(self, silent: bool = True):
+        logd = self.client.logger.debug
+        logw = self.client.logger.warning
+        logd(f'start get selenium access_token')
+        grant_link = self.client.oauth_get_grant_link()
+        logd(f'grant link is {grant_link}')
+        wd: WebDriver = launch_default_selenium_driver(
+            headless=silent
+        )
+
+        wd.get(self.client.default_ok_link)
+        self.default_selenium_login(wd)
+        time.sleep(1)
+        wd.get(grant_link)
+        # target elements
+        button_allow: WebElement = wd.find_element_by_class_name("form-actions_yes")
+        # click on allow button
+        button_allow.click()
+        time.sleep(1)
+        # assume that we are redirected
+        parsed_red_url = urlparse(wd.current_url)
+        q = parse_qs(parsed_red_url.query)
+        if not 'code' in q:
+            logw(f'no code in redirected url! query is {q}')
+        code = q['code'][0]
+        logd(f'code is {code}')
+        time.sleep(1999)
+
+        # https://fast-code.ru/?code=1Q36aASAQElrcYdqfBL95SuZ0CQAF2fNODvYUKeVlLGrP2o8ZWsNFEcj6omalAGhiE41Shjgj74kLeraPcj9Yc0hzGTD412sIHsTeGpKyeP6Crf8vMzmikzkM73wVWhiOdXgvLsbYGLSO4ce3jMcbcTJguKgnypmzAqZtwvL52WuL1&permissions_granted=PHOTO_CONTENT%3BVALUABLE_ACCESS%3BGROUP_CONTENT%3BLONG_ACCESS_TOKEN

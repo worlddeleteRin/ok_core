@@ -3,13 +3,14 @@ import json
 import time
 import hashlib
 
-from httpx import Client, Response
+from httpx import Client, Response, Request
 
 # from ok_core.user.main import OkUser
 
 from ok_core.models import *
 import logging
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
 
 class HttpModule():
     is_debug: bool = True
@@ -51,6 +52,7 @@ class HttpModule():
         )
 
 class OkClient:
+    logger: logging.Logger
     http: HttpModule
     access_token: str
     session_key: str
@@ -76,7 +78,9 @@ class OkClient:
             default_ok_link: str = 'https://ok.ru',
             # user: OkUser = OkUser()
         ):
+        global logger
         # logger.warning(f'user init is {user.dict()}')
+        self.app_id = app_id
         self.api_v = api_v
         self.api_url = api_url
         self.default_ok_link = default_ok_link
@@ -85,6 +89,7 @@ class OkClient:
         self.session_secret_key = session_secret_key
         self.app_key = app_key
         self.app_secret_key = app_secret_key
+        self.logger = logger
         # init httpx Client
         # self.user = user
         self.http = HttpModule(
@@ -132,6 +137,25 @@ class OkClient:
         logger.warning(f'str to hash {res}')
         hashed = hashlib.md5(res.encode()).hexdigest()
         return hashed.lower()
+
+    def oauth_get_grant_link(self) -> str:
+        grants = [
+            "VALUABLE_ACCESS", "LONG_ACCESS_TOKEN", "PHOTO_CONTENT",
+            "GROUP_CONTENT", "VIDEO_CONTENT", "APP_INVITE",  "GET_EMAIL"
+        ]
+        params = {
+            "client_id": self.app_id,
+            "scope": ";".join(grants), 
+            "response_type": "code",
+            "redirect_uri": "https://fast-code.ru",
+        }
+        client = Client()
+        request: Request = client.build_request(
+            url="https://connect.ok.ru/oauth/authorize",
+            method="get",
+            params=params,
+        )
+        return str(request.url)
         
 
     """

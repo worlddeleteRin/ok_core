@@ -6,7 +6,6 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.remote.webelement import WebElement
 import time
 
-from ok_core.user.main import OkUser
 import logging
 
 logger = logging.getLogger(__name__)
@@ -37,21 +36,4 @@ def launch_default_selenium_driver(
     )
     return driver
 
-def default_selenium_login(
-    wd: WebDriver,
-    user: OkUser
-):
-    logger.warning(f'user is {user.dict()}')
-    # target elements
-    email_input: WebElement = wd.find_element_by_id("field_email")
-    password_input: WebElement = wd.find_element_by_id("field_password")
-    login_button: WebElement = wd.find_element_by_class_name("button-pro.__wide")
 
-    # clear inputs
-    email_input.clear()
-    password_input.clear()
-
-    email_input.send_keys(user.username)
-    password_input.send_keys(user.password)
-
-    login_button.click()
