@@ -1,11 +1,23 @@
+from typing import Optional
 from pydantic.main import BaseModel
 import requests
+from ok_core.client import OkClient
 
 from ok_core.user.models import AuthorizeRequestFormData, AuthorizeRequestQuery
 
 class OkUser(BaseModel):
+    client: OkClient
     username: str = ""
     password: str = ""
+    access_token: Optional[str] = None
+    refresh_token: Optional[str] = None
+    expires_in: Optional[int] = None
+
+    class Config:
+        arbitrary_types_allowed = True
+
+    def oauth_get_grant_link(self):
+        pass
 
     def check_can_authorize_web_dirty(
         self

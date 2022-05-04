@@ -9,6 +9,8 @@ from ok_core.likes.models import OkAddLikeProviderEnum
 from ok_core.selenium.main import default_selenium_login, launch_default_selenium_driver
 import time
 
+from ok_core.user.main import OkUser
+
 
 class OkAddLikeQuery(BaseModel):
     group_id: str
@@ -16,11 +18,14 @@ class OkAddLikeQuery(BaseModel):
 
 class OkLikes:
     client: OkClient
+    user: OkUser
     def __init__(
         self,
-        client: OkClient
+        client: OkClient,
+        user: OkUser
     ) -> None:
         self.client = client
+        self.user = user
 
     def get_group_link(
         self,
@@ -42,7 +47,7 @@ class OkLikes:
         # submit login form
         default_selenium_login(
             wd=wd,
-            user=self.client.user
+            user=self.user
         )
         time.sleep(1)
         # go to group page

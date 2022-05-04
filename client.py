@@ -5,7 +5,7 @@ import hashlib
 
 from httpx import Client, Response
 
-from ok_core.user.main import OkUser
+# from ok_core.user.main import OkUser
 
 from ok_core.models import *
 import logging
@@ -61,7 +61,7 @@ class OkClient:
     api_url: str
     app_id: int
     default_ok_link: str
-    user: OkUser
+    # user: OkUser
 
     def __init__(self,
             session_key: str = "tkn1cmoueDna4uM4gbDlpu1QpMd6l4N3KQt80CTKGlAjqCLckuzvuuusHPcGjhDDX532W9",
@@ -74,7 +74,7 @@ class OkClient:
             api_url: str = 'https://api.ok.ru/api',
             app_id: int = 512001409175,
             default_ok_link: str = 'https://ok.ru',
-            user: OkUser = OkUser()
+            # user: OkUser = OkUser()
         ):
         # logger.warning(f'user init is {user.dict()}')
         self.api_v = api_v
@@ -86,7 +86,7 @@ class OkClient:
         self.app_key = app_key
         self.app_secret_key = app_secret_key
         # init httpx Client
-        self.user = user
+        # self.user = user
         self.http = HttpModule(
             client = Client(
                 base_url = self.api_url,
