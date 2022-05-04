@@ -6,10 +6,11 @@ from selenium.webdriver.remote.webelement import WebElement
 from ok_core.client import OkClient
 from ok_core.selenium.main import launch_default_selenium_driver
 
-from ok_core.user.models import AuthorizeRequestFormData, AuthorizeRequestQuery
+from ok_core.user.models import AuthorizeRequestFormData, AuthorizeRequestQuery, GetAccessTokenResponse
 import time
 from urllib.parse import urlparse
 from urllib.parse import parse_qs 
+from httpx import Client, Response
 
 class OkUser(BaseModel):
     client: OkClient
@@ -17,7 +18,7 @@ class OkUser(BaseModel):
     password: str = ""
     access_token: Optional[str] = None
     refresh_token: Optional[str] = None
-    expires_in: Optional[int] = None
+    expires_in: Optional[str] = None
 
     class Config:
         arbitrary_types_allowed = True
@@ -71,6 +72,24 @@ class OkUser(BaseModel):
 
         login_button.click()
 
+    def get_access_token_from_code(self, code: str) -> GetAccessTokenResponse | None:
+        logd = self.client.logger.debug
+        logw = self.client.logger.warning
+        url = "https://api.ok.ru/oauth/token.do"
+        params = self.client.oauth_get_access_token_params(code=code)
+        http = Client()
+        resp: Response = http.post(
+            url=url,
+            data=params
+        )
+        try:
+            tData = GetAccessTokenResponse(**resp.json())
+            return tData
+        except Exception as e:
+            logw(f"Exception when request access token {e}")
+            logw(f"response was {resp.content}")
+            return None
+
     def selenium_get_access_token(self, silent: bool = True):
         logd = self.client.logger.debug
         logw = self.client.logger.warning
@@ -97,6 +116,9 @@ class OkUser(BaseModel):
             logw(f'no code in redirected url! query is {q}')
         code = q['code'][0]
         logd(f'code is {code}')
-        time.sleep(1999)
+        tData = self.get_access_token_from_code(code)
+        wd.close()
+        return tData
+        # time.sleep(1999)
 
         # https://fast-code.ru/?code=1Q36aASAQElrcYdqfBL95SuZ0CQAF2fNODvYUKeVlLGrP2o8ZWsNFEcj6omalAGhiE41Shjgj74kLeraPcj9Yc0hzGTD412sIHsTeGpKyeP6Crf8vMzmikzkM73wVWhiOdXgvLsbYGLSO4ce3jMcbcTJguKgnypmzAqZtwvL52WuL1&permissions_granted=PHOTO_CONTENT%3BVALUABLE_ACCESS%3BGROUP_CONTENT%3BLONG_ACCESS_TOKEN

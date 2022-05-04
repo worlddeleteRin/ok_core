@@ -138,6 +138,16 @@ class OkClient:
         hashed = hashlib.md5(res.encode()).hexdigest()
         return hashed.lower()
 
+    def oauth_get_access_token_params(self, code: str) -> dict:
+        params = {
+            "code": code,
+            "client_id": self.app_id,
+            "client_secret": self.app_secret_key,
+            "redirect_uri": "https://fast-code.ru",
+            "grant_type": "authorization_code"
+        }
+        return params
+
     def oauth_get_grant_link(self) -> str:
         grants = [
             "VALUABLE_ACCESS", "LONG_ACCESS_TOKEN", "PHOTO_CONTENT",

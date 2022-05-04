@@ -1,3 +1,4 @@
+from typing import Optional
 from pydantic.fields import Field
 from pydantic.main import BaseModel
 
@@ -14,6 +15,15 @@ class AuthorizeRequestFormData(BaseModel):
 class AuthorizeRequestQuery(BaseModel):
     cmd: str = Field(default="AnonymLogin", alias="cmd")
     st_cmd: str = Field(default="anonymLogin", alias="st.cmd")
+
+    class Config:
+        allow_population_by_field_name = True
+
+class GetAccessTokenResponse(BaseModel):
+    access_token: str
+    token_type: Optional[str]
+    refresh_token: str
+    expires_in: str
 
     class Config:
         allow_population_by_field_name = True
