@@ -143,7 +143,8 @@ class OkClient:
             "code": code,
             "client_id": self.app_id,
             "client_secret": self.app_secret_key,
-            "redirect_uri": "https://fast-code.ru",
+            # "redirect_uri": "https://fast-code.ru",
+            "redirect_uri": "https://google.ru",
             "grant_type": "authorization_code"
         }
         return params
@@ -157,7 +158,8 @@ class OkClient:
             "client_id": self.app_id,
             "scope": ";".join(grants), 
             "response_type": "code",
-            "redirect_uri": "https://fast-code.ru",
+            # "redirect_uri": "https://fast-code.ru",
+            "redirect_uri": "https://google.ru"
         }
         client = Client()
         request: Request = client.build_request(

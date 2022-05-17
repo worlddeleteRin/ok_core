@@ -104,6 +104,7 @@ class OkUser(BaseModel):
         self.default_selenium_login(wd)
         time.sleep(1)
         wd.get(grant_link)
+        time.sleep(3)
         # target elements
         button_allow: WebElement = wd.find_element_by_class_name("form-actions_yes")
         # click on allow button
