@@ -2,6 +2,11 @@ from pydantic import BaseModel
 from typing import Any, Optional, Union
 
 from httpx import Response
+from enum import Enum
+
+class BaseOkProviderEnum(str, Enum):
+    selenium = "selenium"
+    api = "api"
 
 class BaseOkResponse(BaseModel):
     response: Any
