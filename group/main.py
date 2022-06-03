@@ -1,11 +1,15 @@
-from typing import Union
+from typing import Union, List
+import time
 
 from pydantic.main import BaseModel
+from selenium.webdriver.chrome.webdriver import WebDriver
+from selenium.webdriver.remote.webelement import WebElement
 from ok_core.client import OkClient
 from httpx import Client as HttpClient
 
 from ok_core.models import BaseOkProviderEnum
 from ok_core.logging import lgd,lgw,lge
+from ok_core.selenium.main import launch_default_selenium_driver
 from ok_core.user.main import OkUser
 
 class GetGroupPostIdsQuery(BaseModel):
@@ -22,6 +26,11 @@ class OkGroup:
     ):
         self.id = id
         self.client = client
+
+    def get_group_link(self) -> str:
+        default = self.client.default_ok_link
+        link = f"{default}/group/{self.id}"
+        return link
 
     @staticmethod
     def parseGroupTopicIdsFromUrl(
@@ -52,29 +61,53 @@ class OkGroup:
 
     def check_group_exist(self) -> bool:
         # TODO implement logic to check if group exist (by api perfectly)
+        if self.id == "":
+            return False
         return True
 
     def selenium_get_group_post_ids(
         self,
         query: GetGroupPostIdsQuery,
+        user: OkUser,
+        is_testing: bool = False
     ) -> list[str]:
-        # TODO implement
-        return []
+        post_ids: list[str] = []
+        wd: WebDriver = launch_default_selenium_driver(headless=is_testing)
+        # go the the ok login page
+        wd.get(self.client.default_ok_link)
+        # submit login form
+        user.default_selenium_login(wd=wd)
+        time.sleep(1)
+        # go to group page
+        group_link = self.get_group_link()
+        wd.get(group_link)
+        post_list_el: List[WebElement] = wd.find_elements_by_class_name('feed-w')
+        lgd(f'Found {len(post_list_el)} posts')
+        if len(post_list_el) == 0:
+            lge('Method works incorrectly, cant found posts | Or no posts in group')
+        time.sleep(2)
+        wd.close()
+        return post_ids
 
     def get_group_post_ids(
         self,
         user: OkUser, 
         query: GetGroupPostIdsQuery,
-        provider: BaseOkProviderEnum = BaseOkProviderEnum.selenium
+        provider: BaseOkProviderEnum = BaseOkProviderEnum.selenium,
+        is_testing: bool = False
     ) -> list[str]:
         lgd(f"** Run get group post ids, provider: {provider} **")
         exist = self.check_group_exist()
         if not exist:
-            msg = f"cant get {self.id} group"
+            msg = f"cant get {self.id} group. Mb wrong id"
             lge(msg)
             raise Exception(msg)
         if provider == BaseOkProviderEnum.selenium:
-            self.selenium_get_group_post_ids(query=query)
+            self.selenium_get_group_post_ids(
+                query=query,
+                user=user,
+                is_testing=is_testing
+            )
         else:
             lge(f"Provider is not implemented: {provider}")
         return []
