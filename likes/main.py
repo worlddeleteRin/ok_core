@@ -10,6 +10,7 @@ from ok_core.selenium.main import launch_default_selenium_driver
 import time
 
 from ok_core.user.main import OkUser
+from ok_core.logging import lgd,lgw,lge
 
 
 class OkAddLikeQuery(BaseModel):
@@ -38,10 +39,10 @@ class OkLikes:
 
     def selenium_like(
         self,
-        query: OkAddLikeQuery
+        query: OkAddLikeQuery,
+        is_testing: bool = False
     ) -> Any:
-        print('run selenium like')
-        wd: WebDriver = launch_default_selenium_driver()
+        wd: WebDriver = launch_default_selenium_driver(headless=is_testing)
         # go the the ok login page
         wd.get(self.client.default_ok_link)
         # submit login form
@@ -67,7 +68,9 @@ class OkLikes:
     def add(
         self,
         query: OkAddLikeQuery,
-        provider: OkAddLikeProviderEnum = OkAddLikeProviderEnum.selenium
+        provider: OkAddLikeProviderEnum = OkAddLikeProviderEnum.selenium,
+        is_testing: bool = False
     ) -> Any:
+        lgd(f"** Run add like, provider: {provider}")
         if provider == OkAddLikeProviderEnum.selenium:
-            self.selenium_like(query=query)
+            self.selenium_like(query=query, is_testing=is_testing)
