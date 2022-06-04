@@ -27,10 +27,6 @@ class OkGroup:
         self.id = id
         self.client = client
 
-    def get_group_link(self) -> str:
-        default = self.client.default_ok_link
-        link = f"{default}/group/{self.id}"
-        return link
 
     @staticmethod
     def parseGroupTopicIdsFromUrl(
@@ -55,6 +51,20 @@ class OkGroup:
             except:
                 return None
             return (g,t)
+
+    def get_group_link(self) -> str:
+        default = self.client.default_ok_link
+        link = f"{default}/group/{self.id}"
+        return link
+
+    def makeGroupTopicUrl(
+        self,
+        post_id: str
+    ) -> str:
+        default = self.client.default_ok_link
+        link = f'{default}/group/{self.id}/{post_id}'
+        return link
+
 
     def http(self) -> HttpClient:
         return self.client.http.client
