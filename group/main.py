@@ -85,9 +85,17 @@ class OkGroup:
         lgd(f'Found {len(post_list_el)} posts')
         if len(post_list_el) == 0:
             lge('Method works incorrectly, cant found posts | Or no posts in group')
-        time.sleep(2)
+        for el in post_list_el:
+            like_el = el.find_element_by_class_name('controls-list_lk')
+            post_id_dirty: str = like_el.get_attribute('data-like-reference-id')
+            try:
+                post_id = post_id_dirty.split(':')[-2]
+                post_ids.append(post_id)
+            except Exception:
+                msg = f'cant get post id from {post_id_dirty}'
+                lge(msg)
         wd.close()
-        return post_ids
+        return post_ids[:query.last_n_posts]
 
     def get_group_post_ids(
         self,
@@ -96,6 +104,7 @@ class OkGroup:
         provider: BaseOkProviderEnum = BaseOkProviderEnum.selenium,
         is_testing: bool = False
     ) -> list[str]:
+        post_ids: list[str] = []
         lgd(f"** Run get group post ids, provider: {provider} **")
         exist = self.check_group_exist()
         if not exist:
@@ -103,11 +112,11 @@ class OkGroup:
             lge(msg)
             raise Exception(msg)
         if provider == BaseOkProviderEnum.selenium:
-            self.selenium_get_group_post_ids(
+            post_ids = self.selenium_get_group_post_ids(
                 query=query,
                 user=user,
                 is_testing=is_testing
             )
         else:
             lge(f"Provider is not implemented: {provider}")
-        return []
+        return post_ids
