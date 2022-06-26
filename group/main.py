@@ -62,7 +62,7 @@ class OkGroup:
         post_id: str
     ) -> str:
         default = self.client.default_ok_link
-        link = f'{default}/group/{self.id}/{post_id}'
+        link = f'{default}/group/{self.id}/topic/{post_id}'
         return link
 
 

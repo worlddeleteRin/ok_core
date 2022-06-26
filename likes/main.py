@@ -42,7 +42,7 @@ class OkLikes:
         query: OkAddLikeQuery,
         is_testing: bool = False
     ) -> Any:
-        wd: WebDriver = launch_default_selenium_driver(headless=is_testing)
+        wd: WebDriver = launch_default_selenium_driver(headless=not is_testing)
         # go the the ok login page
         wd.get(self.client.default_ok_link)
         # submit login form
